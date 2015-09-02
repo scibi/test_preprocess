@@ -1,0 +1,5 @@
+---
+# tasks file for debops.test_preprocess
+
+- debug:
+    msg: "{{ preprocess_results }}"

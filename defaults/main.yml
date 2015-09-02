@@ -1,0 +1,42 @@
+---
+# defaults file for debops.preprocess
+ganeti_cluster_name: 'ganeti.{{ ansible_domain }}'
+
+ganeti_hosts_group: 'debops_ganeti'
+ganeti_hosts_master: '{{ groups[ganeti_hosts_group][0] }}'
+
+# Master interface. Bonding will be used if multiple interfaces provided.
+debops_ganeti_master_if:
+  - eth0
+  - eth1
+
+# DRBD sync interface. Bonding will be used if multiple interfaces provided.
+debops_ganeti_sync_if:
+  - eth2
+  - eth3
+
+# debops_ganeti_sync_addr: '10.10.0.11/24'
+
+debops_ganeti_mgmt_vlan: 100
+debops_ganeti_vlans: [ ]
+
+debops_ganeti_vg_name: vmvg
+
+debops_ganeti_interface: |
+  {%- if debops_ganeti_master_if is string -%}
+    {{ debops_ganeti_master_if }}
+  {%- else -%}
+    bond0
+  {%- endif -%}
+debops_ganeti_mgmt_if: |
+  {%- if debops_ganeti_mgmt_vlan is defined -%}
+    {{ debops_ganeti_interface }}.{{ debops_ganeti_mgmt_vlan }}
+  {%- else -%}
+    {{ debops_ganeti_interface }}
+  {%- endif -%}
+debops_ganeti_mgmt_br: |
+  {%- if debops_ganeti_mgmt_vlan is defined -%}
+    vmbr-{{ debops_ganeti_mgmt_vlan }}
+  {%- else -%}
+    vmbr-{{ debops_ganeti_interface }}
+  {%- endif -%}
